@@ -12,13 +12,18 @@ public class MainManager : MonoBehaviour
 
     public Text ScoreText;
     public GameObject GameOverText;
+    public Text ShowText;
+    private string nameText;
     
     private bool m_Started = false;
     private int m_Points;
     
     private bool m_GameOver = false;
 
-    
+    private int highScore;
+    private string highScorer;
+
+ 
     // Start is called before the first frame update
     void Start()
     {
@@ -36,6 +41,9 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
+        CheckScore(0 , "");
+        ShowText.text = $"Best Score : {highScorer} : {highScore}";
+        nameText = InfoSaver.instance.inputField.text;
     }
 
     private void Update()
@@ -57,7 +65,7 @@ public class MainManager : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                SceneManager.LoadScene(1);
             }
         }
     }
@@ -65,12 +73,31 @@ public class MainManager : MonoBehaviour
     void AddPoint(int point)
     {
         m_Points += point;
-        ScoreText.text = $"Score : {m_Points}";
+        ScoreText.text = $"Score : {nameText} :{m_Points}";
     }
 
     public void GameOver()
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+ 
+        CheckScore(m_Points, nameText) ;
+        ShowText.text = $"Best Score : {highScorer} : {highScore}";
+        InfoSaver.instance.SaveScore();
+    }
+    public void CheckScore(int score , string scorer)
+    {
+        if (score > InfoSaver.instance.highScore)
+        {
+            InfoSaver.instance.highScore = score;
+            InfoSaver.instance.highScorer = scorer;
+        }
+        highScore = InfoSaver.instance.highScore;
+        highScorer = InfoSaver.instance.highScorer;
+    }
+
+    public void BackButton()
+    {
+        SceneManager.LoadScene(0);
     }
 }
